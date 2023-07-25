@@ -12,7 +12,7 @@ public class Test1 {
 	public static void main(String[] args) {
 		String str="{\"sequence\":0,\"apis\":[],\"computed\":[],\"data\":[],\"lifecycle\":[],\"methods\":[],\"ui\":[],\"name\":\"aaa\"}";
 		Document doc=Document.parse(str,CODEC);
-		System.out.println(doc);
+		//System.out.println(doc);
 
 	}
 
