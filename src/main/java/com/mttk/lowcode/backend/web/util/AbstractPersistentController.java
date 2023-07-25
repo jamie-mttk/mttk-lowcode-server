@@ -126,6 +126,6 @@ public abstract class AbstractPersistentController {
 		if(!body.containsKey("_insertTime")) {
 			body.append("_insertTime", new Date());
 		}
-		body.append("_iupdateTime", new Date());
+		body.append("_updateTime", new Date());
 	}
 }
