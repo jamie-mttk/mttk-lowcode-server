@@ -1,0 +1,15 @@
+{
+	"dataModel": "65bf2b6f55cf9c46bd311fc0",
+	"filter": "17c",
+	"column": {
+		"key": "unique10_id",
+		"dataType": "string",
+		"label": "¶©µ¥±àºÅ",
+		"type": "field",
+		"entity": "unique10",
+		"column": "id",
+		"id": "F_10sr4i9t38q80",
+		"_ui_mode": "input",
+		"_ui_input_match": "="
+	}
+}

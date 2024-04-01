@@ -2,10 +2,7 @@ package com.mttk.lowcode.backend.web.util;
 
 import java.util.Arrays;
 import java.util.UUID;
-/**
- * 字符串相关
- *
- */
+
 public class StringUtil {
 	public static final String BLANK_STRING = "";
 

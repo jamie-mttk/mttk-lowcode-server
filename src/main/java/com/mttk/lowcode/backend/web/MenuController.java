@@ -14,34 +14,45 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mttk.lowcode.backend.web.util.AbstractPersistentController;
-import com.mttk.lowcode.backend.web.util.MongoUtil;
+import com.mttk.lowcode.backend.web.util.AbstractPersistentWithAuthController;
+import com.mttk.lowcode.backend.web.util.MaxSequenceUtil;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/menu")
-public class MenuController extends AbstractPersistentController{
+public class MenuController extends AbstractPersistentWithAuthController{
 	@Override
 	protected String getColName() {
-		return "userMenu";
+		return "menu";
 	}
 	@Override
 	protected void preQuery(List<AggregationOperation> aggregations) {
 		//Sort
-				aggregations.add(Aggregation.sort(Direction.ASC,"sequence"));
+		aggregations.add(Aggregation.sort(Direction.ASC,"sequence"));
 	}
 	@Override
 	@PostMapping(value = "/delete")
 	public ResponseEntity<Document> delete(String id) throws Exception {
+		ResponseEntity<Document> result=super.delete(id);
+		if(result.getStatusCode().isError()) {
+			return result;
+		}
 		//Find and unlink all the pages
-		List<Document> pages=template.find(new Query(Criteria.where("menu").is(id)), Document.class, "userPage");
+		List<Document> pages=template.find(new Query(Criteria.where("menu").is(id)), Document.class, "page");
 		for(Document page:pages) {
 			page.put("menu", "");
-			template.save(page, "userPage");
+			template.save(page, "page");
 		}
 		//
-		return super.delete(id);
+		return result;
 	}
 
+	//Get max sequence of the given app
+	@GetMapping(value = "/maxSequence")
+	public ResponseEntity<Document> maxSequence(HttpServletRequest request) throws Exception {
+		return MaxSequenceUtil.maxSequence(request, template, getColName());
+	}
 
 //	@Override
 //	protected void postQuery(List<Document> result) {
@@ -49,7 +60,7 @@ public class MenuController extends AbstractPersistentController{
 //		for(Document d:result) {
 //			//calculate page count under the menu
 //			Criteria criteria = Criteria.where("menu").is(MongoUtil.getId(d));
-//			d.append("countPages",template.count(new Query(criteria), "userPage"));
+//			d.append("countPages",template.count(new Query(criteria), "page"));
 //		}
 //	}
 

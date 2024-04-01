@@ -1,0 +1,94 @@
+{
+	"config": {
+		"dataModel": "65bf2b6f55cf9c46bd311fc0",
+		"dumpMode":"JSON",
+		"dimension": [
+			{
+				"key": "dimension_01",
+				"column": "unique30_province_name"
+			},
+			{
+				"key": "dimension_02",
+				"column": "unique30_city_name"
+			},
+			{
+				"key": "dimension_03",
+				"column": "unique30_area_name"
+			},
+				{
+				"key": "dimension_04",
+				"column": "unique10_code"
+			}
+		],
+		"dimension1": [
+			{
+				"key": "dimension1_01",
+				"column": "unique20_name"
+			}
+		],
+		"dimension2": [
+			{
+				"key": "dimension2_01",
+				"column": "e111223"
+			}
+		],
+		"metric": [
+			{
+				"key": "metric_01",
+				"column": "unique10_amount_request",
+				"_aggregation": "SUM"
+			},
+			{
+				"key": "metric_02",
+				"column": "unique10_amount_request",
+				"_aggregation": "AVG"
+			}
+		],
+		"metric1": [
+			{
+				"key": "metric1_01",
+				"column": "unique10_amount",
+				"_aggregation": "MAX"
+			},
+			{
+				"key": "metric1_02",
+				"column": "unique10_amount",
+				"_aggregation": "MIN"
+			}
+		],
+		"rowLimit": 26,
+		"pagination": {
+			"enabled": true,
+			"page": 2,
+			"size": 6
+		}
+	},
+	"filters": [
+		{
+			"column": "unique10_code",
+			"operation": "LIKE",
+			"value": "02"
+		},
+		{
+			"column": "unique30_area_name",
+			"operation": "LIKE",
+			"value": ""
+		},
+		{
+			"column": "unique10_amount_request",
+			"operation": ">=",
+			"value": "100"
+		}
+	],
+		"sorts": [
+		{
+			"column": "unique30_area_name",
+			"direction": "ASC"
+
+		},
+		{
+			"column": "unique30_city_name",
+			"direction": "DESC"
+		}
+	]
+}

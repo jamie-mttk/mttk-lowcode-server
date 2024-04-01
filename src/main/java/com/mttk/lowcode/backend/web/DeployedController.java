@@ -35,7 +35,7 @@ public class DeployedController {
 	@GetMapping(value = "/menus")
 	public ResponseEntity<Document> menus(String id) throws Exception {
 		//All menus
-		List<Document> menus = template.find(new Query(Criteria.where("app").is(id)).with(Sort.by(Direction.ASC, "sequence")),Document.class, "userMenuDeploy");
+		List<Document> menus = template.find(new Query(Criteria.where("app").is(id)).with(Sort.by(Direction.ASC, "sequence")),Document.class, "menu");
 		//All pages - use aggregate to 
 		List<Document> pages=findPages(id);
 //		System.out.println(menus);
@@ -62,7 +62,7 @@ public class DeployedController {
 	@GetMapping(value = "/load")
 	public ResponseEntity<Document> load(String id) throws Exception {
 
-		Document result = template.findById(id, Document.class, "userPageDeploy");
+		Document result = template.findById(id, Document.class, "page");
 		if (result == null) {
 			return ResponseEntity.ok(new Document());
 		} else {
@@ -79,7 +79,7 @@ public class DeployedController {
 		// Sort
 		aggregations.add(Aggregation.sort(Direction.ASC, "sequence"));
 		//
-		AggregationResults<Document> out = template.aggregate(Aggregation.newAggregation(aggregations), "userPageDeploy",
+		AggregationResults<Document> out = template.aggregate(Aggregation.newAggregation(aggregations), "page",
 				Document.class);
 		//
 		List<Document> result = new ArrayList<>();

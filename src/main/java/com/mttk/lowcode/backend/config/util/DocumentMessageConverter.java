@@ -7,6 +7,8 @@ import org.bson.codecs.BsonTypeClassMap;
 import org.bson.codecs.Decoder;
 import org.bson.codecs.DocumentCodec;
 import org.bson.json.JsonWriterSettings;
+import org.bson.json.StrictJsonWriter;
+import org.bson.types.Decimal128;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -47,6 +49,11 @@ public class DocumentMessageConverter extends AbstractHttpMessageConverter<Docum
         JsonWriterSettings settings= JsonWriterSettings.builder()
         		.objectIdConverter(new ObjectIdConverter())
         		.dateTimeConverter(new DateTimeConverter())//必须自己转换,否则系统自动转换成了UTC时间导致差8个小时
+        		.int64Converter((Long value, StrictJsonWriter writer) -> writer.writeNumber(Long.toString(value)))
+				.int32Converter((Integer value, StrictJsonWriter writer) -> writer.writeNumber(Integer.toString(value)))
+				.doubleConverter((Double value, StrictJsonWriter writer) -> writer.writeNumber(Double.toString(value)))
+				.decimal128Converter((Decimal128 value, StrictJsonWriter writer) -> writer.writeNumber(value.toString()))
+				.timestampConverter(new TimestampConverter())
         		.build();
        // System.out.println("@@Sent:@@:"+doc.toJson(settings));
         outputMessage.getBody().write(doc.toJson(settings).getBytes("utf-8"));

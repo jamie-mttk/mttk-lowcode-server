@@ -1,0 +1,28 @@
+{
+	"config": {
+		"type": "bar",
+		"dataName": "data_bi_charts_va4hgjrofmg0",
+		"dimension": [
+			{
+				"key": "unique30_province_name",
+				"dataType": "string",
+				"label": "Ê¡",
+				"type": "field",
+				"entity": "unique30",
+				"column": "province_name"
+			}
+		],
+		"metric": [
+			{
+				"key": "unique10_amount_request",
+				"dataType": "number",
+				"label": "×Ü½ð¶î",
+				"type": "field",
+				"entity": "unique10",
+				"column": "amount_request",
+				"_aggregation": "SUM"
+			}
+		],
+		"dataModel": "65bf2b6f55cf9c46bd311fc0"
+	}
+}

@@ -11,16 +11,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mttk.lowcode.backend.web.util.AbstractPersistentController;
+import com.mttk.lowcode.backend.web.util.AbstractPersistentWithAuthController;
 import com.mttk.lowcode.backend.web.util.StringUtil;
 
 @RestController
 @RequestMapping("/pageWidget")
-public class PageWidgetController extends AbstractPersistentController{
+public class PageWidgetController extends AbstractPersistentWithAuthController{
 	@Autowired PageController pageController;
 	@Override
 	protected String getColName() {
-		return "userPageWidget";
+		return "pageWidget";
 	}
 
 	
@@ -29,7 +29,7 @@ public class PageWidgetController extends AbstractPersistentController{
 	
 	@PostMapping(value = "/updateRawPage")
 	public ResponseEntity<Document> updateRawPage(@RequestBody List<String> ids) throws Exception {
-		System.out.println(ids);
+//		System.out.println(ids);
 	
 		List<Document> result=new ArrayList<>(ids.size());
 		for(String id:ids) {

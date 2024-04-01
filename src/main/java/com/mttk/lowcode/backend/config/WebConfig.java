@@ -15,7 +15,8 @@ import com.mttk.lowcode.backend.config.util.DocumentMessageConverter;
 @EnableWebMvc
 
 public class WebConfig implements WebMvcConfigurer {
-
+	@Autowired
+    SecurityInterceptor securityInterceptor;
 	@Override
 	public void extendMessageConverters(java.util.List<HttpMessageConverter<?>> converters) {
 		converters.add(0, messageConverter());
@@ -35,10 +36,10 @@ public class WebConfig implements WebMvcConfigurer {
 //	@Autowired
 //	TestInterceptor testInterceptor;
 //
-//	@Override
-//	public void addInterceptors(InterceptorRegistry registry) {
-//		// 没有设置基本登录
-//		registry.addInterceptor(testInterceptor).addPathPatterns("/**");
-//	}
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		//
+        registry.addInterceptor(securityInterceptor).addPathPatterns("/**").excludePathPatterns("/","/*.html","/favicon.ico","/static/**");
+	}
 
 }
