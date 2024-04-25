@@ -28,7 +28,7 @@ public class SecurityInterceptor implements HandlerInterceptor {
 	//test
 	@Autowired AccountController accountController;
 	// These URLs does not need to check                                               
-	private static final String[] ignoreURIs = new String[] { "POST:/account/login", "POST:/account/logout", "GET:/user/info"};
+	private static final String[] ignoreURIs = new String[] { "POST:/account/login", "POST:/account/logout", "GET:/user/info","GET:/echartsTheme/query"};
 	// 
 //	private Map<String, Set<Role>> uriRoles = null;
 
@@ -37,10 +37,10 @@ public class SecurityInterceptor implements HandlerInterceptor {
 			throws Exception {
         Document loginInfo = AccountUtil.getLoginInfo(request, AccountUtil.getCache(cacheManager));
         //Below is for quick test,remove in production
-        if(loginInfo==null && "demo".equals(AccountUtil.getLoginToken(request))){
-        	Document d=accountController.loginInternal("jamie","123456").getBody();
-        	loginInfo=accountController.infoInternal(d.getString("token")).getBody();
-        }
+//        if(loginInfo==null && "demo".equals(AccountUtil.getLoginToken(request))){
+//        	Document d=accountController.loginInternal("jamie","123456").getBody();
+//        	loginInfo=accountController.infoInternal(d.getString("token")).getBody();
+//        }
 		//
 //		if (user != null) {
 			SecurityContext.getCurrentContext().setAuthentication(loginInfo);
@@ -60,9 +60,14 @@ public class SecurityInterceptor implements HandlerInterceptor {
 //        }
         //
 		String uri = request.getServletPath();
+		if(uri.startsWith("/assets")) {
+			//These are static resource such as JS/CSS
+			return true;
+		}
 		if (StringUtil.isEmpty(uri)) {
 			return true;
 		}
+//		System.out.println(uri);
 		String resource = request.getMethod() + ":" + uri;
 		// 
 //		System.out.println(isIgnoreUri(resource)+"######:"+resource+"@@@"+loginInfo);
@@ -93,6 +98,7 @@ public class SecurityInterceptor implements HandlerInterceptor {
 
 	// 是否是忽略的URL
 	private boolean isIgnoreUri(String uri) {
+//		System.out.println(uri);
 		for (String s : ignoreURIs) {
 			if (s.equalsIgnoreCase(uri)) {
 				return true;

@@ -8,10 +8,11 @@ import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.mttk.lowcode.backend.web.util.StringUtil;
+import com.mttk.lowcode.backend.web.util.ThrowableUtil;
 import com.mttk.lowcode.backend.web.util.bi.BiMiscUtil.DUMP_MODE;
-import com.mttk.lowcode.backend.web.util.bi.pagination.Page;
-import com.mttk.lowcode.backend.web.util.bi.pagination.dialect.AbstractDialect;
-import com.mttk.lowcode.backend.web.util.bi.pagination.dialect.DialectBuilder;
+import com.mttk.lowcode.backend.web.util.bi.dialect.AbstractDialect;
+import com.mttk.lowcode.backend.web.util.bi.dialect.DialectBuilder;
+import com.mttk.lowcode.backend.web.util.bi.dialect.Page;
 
 public class BiBuildUtil {
 
@@ -24,6 +25,15 @@ public class BiBuildUtil {
 			//
 			return buildInternal(connection, dataModel, body).append("timecost",
 					(System.currentTimeMillis() - buildStart));
+		}catch(Throwable t) {
+			Document error=new Document();
+			error.append("error",true);
+			error.append("message", t.getMessage());
+			error.append("detail", ThrowableUtil.dump2String(t));
+			if(t instanceof BiSQLException) {
+				error.append("sql", ((BiSQLException)t).getSql());
+			}
+			return error;
 		}
 	}
 
@@ -74,8 +84,13 @@ public class BiBuildUtil {
 			sqlCount = BiCountUtil.buildSQLCountSQL(sqlCount);
 			System.out.println(sqlCount);
 			sqlList.add(new Document().append("type", "count").append("sql", sqlCount));
-			
-			Long total = BiCountUtil.calCount(connection, sqlCount);
+
+			Long total = 0l;
+			try {
+			total=BiCountUtil.calCount(connection, sqlCount);
+			} catch (Exception e) {
+				throw new BiSQLException(sqlCount, e.getMessage(), e);
+			}
 			// Build page object
 			Page page = new Page(paginationConfig.getInteger("page", 1), paginationConfig.getInteger("size", 10));
 
@@ -96,8 +111,11 @@ public class BiBuildUtil {
 		// Final SQL
 		System.out.println(sql);
 		//
-		BiMiscUtil.dumpData(result, connection, sql, biBodyWrap);
-
+		try {
+			BiMiscUtil.dumpData(result, connection, sql, biBodyWrap);
+		} catch (Exception e) {
+			throw new BiSQLException(sql, e.getMessage(), e);
+		}
 		//
 		Document responseBody = new Document().append("data", result).append("sqls", sqlList);
 		if (pagination != null) {
@@ -175,8 +193,7 @@ public class BiBuildUtil {
 			//
 			String operation = filter.getString("operation");
 			Object value = filter.get("value");
-			
-	
+
 			if ("LIKE".equalsIgnoreCase(operation)) {
 				// Like operation,automatically add ' and %
 				value = "%" + value + "%";
@@ -187,31 +204,36 @@ public class BiBuildUtil {
 			} else if ("START_WITH".equalsIgnoreCase(operation)) {
 				operation = "LIKE";
 				// Like operation,automatically add ' and %
-				value =  value + "%";
+				value = value + "%";
 			} else if ("END_WITH".equalsIgnoreCase(operation)) {
 				operation = "LIKE";
 				// Like operation,automatically add ' and %
-				value = "%" + value ;	
+				value = "%" + value;
 			} else if ("IS_NULL".equalsIgnoreCase(operation)) {
 				operation = "IS NULL";
-				value=null;
+				value = null;
 			} else if ("NOT_NULL".equalsIgnoreCase(operation)) {
 				operation = "IS NOT NULL";
-				value=null;
+				value = null;
 			} else if ("EMPTY".equalsIgnoreCase(operation)) {
 				operation = "=";
-				value="";
+				value = "";
 			} else if ("NOT_EMPTY".equalsIgnoreCase(operation)) {
 				operation = "!=";
-				value="";
+				value = "";
 			} else if ("IN".equalsIgnoreCase(operation)) {
 				value = buildIn(value, isStringType(sqlField.getDefine().getString("dataType")));
-			} 
-			
+			}
 			//
-			if (value!=null && !"IN".equalsIgnoreCase(operation) && isStringType(sqlField.getDefine().getString("dataType"))) {
+			if (value instanceof String && StringUtil.notEmpty(value) && !"IN".equalsIgnoreCase(operation)) {
+				// try to handle the unexpected characters
+				value = tryClean((String) value);
+			}
+			//
+			if (value != null && !"IN".equalsIgnoreCase(operation)
+					&& isStringType(sqlField.getDefine().getString("dataType"))) {
 				// add '
-				value = "'" + value + "'";			
+				value = "'" + value + "'";
 			}
 			if (!hasWhere) {
 				hasWhere = true;
@@ -221,12 +243,17 @@ public class BiBuildUtil {
 			}
 			//
 			sb.append(sqlField.getExpression()).append(" ").append(operation);
-			if(value!=null) {
+			if (value != null) {
 				sb.append(" ").append(value);
 			}
-			
 
 		}
+	}
+
+	private static String tryClean(String value) {
+		// replace ' to ''
+		 return value.replaceAll("'", "''");
+		//return value;
 	}
 
 	private static boolean isStringType(String dataType) {

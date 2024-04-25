@@ -5,8 +5,8 @@ import java.sql.Connection;
 import org.bson.Document;
 
 import com.mttk.lowcode.backend.web.util.StringUtil;
-import com.mttk.lowcode.backend.web.util.bi.pagination.dialect.AbstractDialect;
-import com.mttk.lowcode.backend.web.util.bi.pagination.dialect.DialectBuilder;
+import com.mttk.lowcode.backend.web.util.bi.dialect.AbstractDialect;
+import com.mttk.lowcode.backend.web.util.bi.dialect.DialectBuilder;
 
 //A parsed SQL field
 public class SQLField {

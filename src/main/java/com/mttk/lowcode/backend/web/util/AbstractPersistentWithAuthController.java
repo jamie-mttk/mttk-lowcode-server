@@ -146,7 +146,8 @@ public abstract class AbstractPersistentWithAuthController extends AbstractPersi
 			return true;
 		}
 		//
-		return operations.contains(operation);
+		return operations.contains(operation)||operations.contains("all")||(
+				operations.contains("all_read") && "access".equals(operation));
 
 	}
 

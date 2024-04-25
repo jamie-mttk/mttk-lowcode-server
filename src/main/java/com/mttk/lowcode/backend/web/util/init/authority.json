@@ -1,0 +1,41 @@
+[{
+    "_id" : "65d809cdf164234e3b72b4ed",
+    "name" : "_.sys.app",
+    "key" : "app"
+},
+{
+    "_id" : "65d80a24f164234e3b72b4f6",
+    "name" : "bi.sys.jdbcConnection",
+    "key" : "jdbcConnection"
+},
+{
+    "_id" : "65d80a47f164234e3b72b4f7",
+    "name" : "bi.sys.dataModel",
+    "key" : "dataModel"
+},
+{
+    "_id" : "65d80a4ef164234e3b72b4f8",
+    "name" : "_.sys.menu",
+    "key" : "menu"
+},
+{
+    "_id" : "65d80a52f164234e3b72b4f9",
+    "name" : "_.sys.page",
+    "key" : "page"
+},
+{
+    "_id" : "65e6b76570bbe3662947426d",
+    "name" : "_.sys.accountGroup",
+    "key" : "accountGroup"
+},
+{
+    "_id" : "65e6b77270bbe3662947426e",
+    "name" : "_.sys.accountRole",
+    "key" : "accountRole"
+},
+{
+    "_id" : "65e6b77b70bbe3662947426f",
+    "name" : "_.sys.account",
+    "key" : "account"
+}
+]

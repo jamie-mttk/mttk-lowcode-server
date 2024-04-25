@@ -7,6 +7,7 @@ import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
+import org.springframework.core.env.Environment;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -25,7 +26,9 @@ import com.mttk.lowcode.backend.web.util.AbstractPersistentWithAuthController;
 import com.mttk.lowcode.backend.web.util.MongoUtil;
 import com.mttk.lowcode.backend.web.util.StringUtil;
 import com.mttk.lowcode.backend.web.util.auth.AccountUtil;
+import com.mttk.lowcode.backend.web.util.auth.EnviromentUtil;
 import com.mttk.lowcode.backend.web.util.auth.PasswordEncoder;
+import com.mttk.lowcode.backend.web.util.auth.SecurityContext;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -38,7 +41,8 @@ public class AccountController extends AbstractPersistentWithAuthController {
 	PasswordEncoder passwordEncoder;
 	@Autowired
 	private CacheManager cacheManager;
-
+	@Autowired
+	private Environment environment;
 	@Override
 	protected String getColName() {
 		return "account";
@@ -92,22 +96,69 @@ public class AccountController extends AbstractPersistentWithAuthController {
 		return super.save(body);
 	}
 	@PostMapping(value = "/changePassword")
+	//Change login user password
+	//body {password:'',passwordOld:''}
+	//if account is not existed,return error {error:true,code:201} 
+	//if old password is not matched,return error {error:true,code:202} 
+	public ResponseEntity<Document> changePassword(@RequestBody Document body) throws Exception{
+	Document loginInfo=SecurityContext.getCurrentContext().getAuthentication();
+	if(loginInfo==null) {
+		 return ResponseEntity.ok(new Document("error",true).append("code", 201)); 
+	}
+	
+	if(EnviromentUtil.getSuppressAdminPassword(environment) && "admin".equals(loginInfo.getString("username"))) {
+		return ResponseEntity.ok(new Document("error",true).append("code", 250)); 
+	}
+	Document account=template.findById(MongoUtil.getId(loginInfo), Document.class, getColName());
+	if(account==null) {
+		return ResponseEntity.ok(new Document("error",true).append("code", 201)); 
+	}
+	//
+	if(!passwordEncoder.matches(body.getString("passwordOld"), account.getString("password"))) {
+		//Old password is incorrect
+		return ResponseEntity.ok(new Document("error",true).append("code", 202));
+	}
+	//
+	account.append("password", encryptPassword(body.getString("password")));
+	//
+	return super.save(account);
+}
+
+	
 	//body  {id:'',password:'',passwordOld:''}
 	//if account is not existed,return error {error:true,code:201} 
 	//if old password is not matched,return error {error:true,code:202} 
 	//Success change returns the result of save
-	public ResponseEntity<Document> changePassword(@RequestBody Document body) throws Exception{
+//	public ResponseEntity<Document> changePassword(@RequestBody Document body) throws Exception{
+//		String id=MongoUtil.getId(body);
+//
+//		//load should return successful result since data auth is checked before
+//		Document account=template.findById(id, Document.class, getColName());
+//		if(account==null) {
+//			return ResponseEntity.ok(new Document("error",true).append("code", 201)); 
+//		}
+//		//
+//		if(!passwordEncoder.matches(body.getString("passwordOld"), account.getString("password"))) {
+//			//Old password is incorrect
+//			return ResponseEntity.ok(new Document("error",true).append("code", 202));
+//		}
+//		//
+//		account.append("password", encryptPassword(body.getString("password")));
+//		//
+//		return super.save(account);
+//	}
+	
+	@PostMapping(value = "/resetPassword")
+	//body  {id:'',password:'',passwordOld:''}
+	//if account is not existed,return error {error:true,code:201} 
+	//Success change returns the result of save
+	public ResponseEntity<Document> resetPassword(@RequestBody Document body) throws Exception{
 		String id=MongoUtil.getId(body);
 
 		//load should return successful result since data auth is checked before
 		Document account=template.findById(id, Document.class, getColName());
 		if(account==null) {
 			return ResponseEntity.ok(new Document("error",true).append("code", 201)); 
-		}
-		//
-		if(!passwordEncoder.matches(body.getString("passwordOld"), account.getString("password"))) {
-			//Old password is incorrect
-			return ResponseEntity.ok(new Document("error",true).append("code", 202));
 		}
 		//
 		account.append("password", encryptPassword(body.getString("password")));
@@ -140,6 +191,7 @@ public class AccountController extends AbstractPersistentWithAuthController {
 		// Find all the authorities
 		Document authorities = findAuthoritiesByAccount(account);
 		account.append("authorities", authorities);
+//		System.out.println("####"+account.toJson());
 		AccountUtil.getCache(cacheManager).put(token, account.toJson());
 
 		// 返回token到前端
@@ -181,7 +233,7 @@ public class AccountController extends AbstractPersistentWithAuthController {
 	}
 
 	// Authority structure: {"module" : "jdbcConnection","operations" : [ "access",
-	// "add", "edit", "del", "auth", "all"] }
+	// "add", "edit", "del", "auth", "all","all_read"] }
 	private Document findAuthoritiesByAccount(Document account) {
 		Document authorities = new Document();
 		for (String roleId : account.getList("roles", String.class, new ArrayList<>(0))) {

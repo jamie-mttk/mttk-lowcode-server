@@ -80,6 +80,7 @@ public class PageController extends AbstractPersistentWithAppAuthController {
 			result.put("menu", body.getString("menu"));	
 			result.put("icon", body.getString("icon"));	
 			result.put("sequence", body.getInteger("sequence",0));	
+			result.put("settingAbsolute", body.get("settingAbsolute"));
 			result.put("_updateTime", new Date());
 //			result = template.save(result, getColName());
 		}else {

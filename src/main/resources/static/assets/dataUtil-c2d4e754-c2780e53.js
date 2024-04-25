@@ -1,0 +1,1 @@
+function u(o,n){const t=[];let e=!0;for(const r of o){if(e){e=!1;continue}t.includes(r[n])||t.push(r[n])}return t}function c(o){const n={};for(let t=0;t<o.length;t++)n[o[t]]=t;return n}export{u as r,c as u};

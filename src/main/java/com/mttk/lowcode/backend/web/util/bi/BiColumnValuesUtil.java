@@ -11,8 +11,8 @@ import java.util.List;
 import org.bson.Document;
 
 import com.mttk.lowcode.backend.web.util.StringUtil;
-import com.mttk.lowcode.backend.web.util.bi.pagination.Page;
-import com.mttk.lowcode.backend.web.util.bi.pagination.dialect.DialectBuilder;
+import com.mttk.lowcode.backend.web.util.bi.dialect.DialectBuilder;
+import com.mttk.lowcode.backend.web.util.bi.dialect.Page;
 
 public class BiColumnValuesUtil {
 	public static Document columnValues(Connection connection, DataModelWrap dataModelWrap, Document column,

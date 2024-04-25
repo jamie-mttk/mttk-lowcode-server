@@ -1,0 +1,13 @@
+[
+	{
+		"_id": "65d80828f164234e3b72b4e0",
+		"password": "$2a$10$51JS38bd5k5pAsJlNVObPukG/8Yn7jvFuL81DT5KimQrlyB3uPKvK",
+		"groups": [],
+		"roles": [
+			"65d80be9f164234e3b72b4ff"
+		],
+		"username": "admin",
+		"name": "Admin",
+		"active": true
+	}
+]

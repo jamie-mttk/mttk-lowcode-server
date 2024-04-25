@@ -28,5 +28,15 @@ public class EnviromentUtil {
 		//
 		return "true".equalsIgnoreCase(val);
 	}
+	
+	//Whether data auth is suppressed, for test
+	public static boolean getSuppressAdminPassword(Environment environment) {
+		String val = environment.getProperty("lowcode.suppress.admin.password");
+		if (StringUtil.isEmpty(val)) {
+			return false;
+		}
+		//
+		return "true".equalsIgnoreCase(val);
+	}
 
 }

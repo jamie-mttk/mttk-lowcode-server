@@ -30,6 +30,9 @@ public abstract class AbstractPersistentWithAppAuthController extends AbstractPe
 	@Override
 	public ResponseEntity<Document> load(String id) throws Exception {
 		ResponseEntity<Document> result = super.load(id);
+		if(result.getStatusCode().isError()) {
+			return result;
+		}
 		if (canAccessApp(result.getBody())) {
 			return result;
 		} else {

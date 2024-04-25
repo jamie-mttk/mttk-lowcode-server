@@ -1,0 +1,32 @@
+[{
+    "_id" : "65d80be9f164234e3b72b4ff",
+    "name" : "Admin role",
+    "description" : "Full control of the whole system",
+    "authorities" : {
+        "app" : [
+            "all"
+        ],
+        "jdbcConnection" : [
+            "all"
+        ],
+        "dataModel" : [
+            "all"
+        ],
+        "menu" : [
+            "all"
+        ],
+        "page" : [
+            "all"
+        ],
+        "accountGroup" : [
+            "all"
+        ],
+        "accountRole" : [
+            "all"
+        ],
+        "account" : [
+            "all"
+        ]
+    }
+}
+]

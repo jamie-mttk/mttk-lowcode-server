@@ -79,6 +79,7 @@ public class DataAuthUtil {
 				handleOwners();
 				handleOwnerGroups();
 				handleUserAndGroup();
+				handleAllRead();
 				handleFinalize();
 			} else {
 				applyAll(aggregates);
@@ -255,12 +256,19 @@ public class DataAuthUtil {
 				.reduce(s);
 		aggregates.add(AddFieldsOperation.addField("_operationsOther").withValue(r).build());
 	}
-
+	// Refer to x.0
+	private void handleAllRead() {
+		//Whether account has all 
+		boolean hasAllRead=accountOperations!=null && accountOperations.contains("all_read");
+		List<String> operations=hasAllRead? Arrays.asList("access"):operationsEmpty;
+//		System.out.println("##########operations="+operations.size()+"~~"+accountOperations.toString());
+		aggregates.add(AddFieldsOperation.addField("_operationsAllRead").withValue(operations).build());
+	}
 	// 4.0
 	private void handleFinalize() {
 		// 4.1
 		SetUnion s = SetOperators.SetUnion.arrayAsSet("$_operationsOwners").union("$_operationsOwnerGroups",
-				"$_operationsOther");
+				"$_operationsOther","$_operationsAllRead");
 		aggregates.add(AddFieldsOperation.addField("_operationsAll").withValue(s).build());
 		// 4.2
 		Filter filter = ArrayOperators.Filter.filter("$_operationsAll").as("o")
@@ -275,9 +283,11 @@ public class DataAuthUtil {
 		// 4.4
 		aggregates.add(Aggregation.match(Criteria.where("_operationCount").gt(0)));
 		// 4.5
-		aggregates.add(UnsetOperation.unset("_operationsOwners", "_operationsOwnerGroups", "_operationsOther",
-				"_operationCount"));
+//		aggregates.add(UnsetOperation.unset("_operationsOwners", "_operationsOwnerGroups", "_operationsOther",
+//				"_operationCount"));
 	}
+
+	
 
 	// Handle pageable
 	private void handlePageable() {

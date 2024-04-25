@@ -20,10 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mttk.lowcode.backend.web.util.AbstractPersistentWithAuthController;
 import com.mttk.lowcode.backend.web.util.auth.DataAuthUtil;
 import com.mttk.lowcode.backend.web.util.auth.SecurityContext;
+import com.mttk.lowcode.backend.web.util.init.InitUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-@RestController
+//@RestController
 @RequestMapping("/test")
 public class TestController extends AbstractPersistentWithAuthController {
 	@Override
@@ -68,10 +69,11 @@ public class TestController extends AbstractPersistentWithAuthController {
 
 	@GetMapping(value = "/test2")
 	public ResponseEntity<Document> test2() throws Exception {
-		System.out.println("Start wait");
-		Thread.sleep(10 * 1000);
-		System.out.println("Finish wait");
+		
+		InitUtil.init(template);
+		//
 		return ResponseEntity.ok(new Document("ok", true));
 	}
 
+	
 }

@@ -136,12 +136,17 @@ db.page.aggregate([
             }
         }
     },
-
+    //x.0 handle all_read
+    {
+        $addFields: {
+            "_operationsAllRead": ['access']
+        }
+    },
     //4.0 Final
     //4.1 combine all the operations
     {
         $addFields: {
-            "_operationsAll": { "$setUnion": ["$_operationsOwners", "$_operationsOwnerGroups", "$_operationsOther"] }
+            "_operationsAll": { "$setUnion": ["$_operationsOwners", "$_operationsOwnerGroups", "$_operationsOther","$_operationsAllRead"] }
         }
     },
     //4.2 Combine the operations set in account role. On the other word, remove the operations in _operationsAll which is not in the account role resource list

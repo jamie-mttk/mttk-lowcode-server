@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mttk.lowcode.backend.web.util.StringUtil;
 
 //A demo class used to build demo
-@RestController
+//@RestController
 @RequestMapping("/demo")
 public class DemoController{	
 	@GetMapping(value = "/query")
