@@ -150,6 +150,7 @@ db.page.aggregate([
         }
     },
     //4.2 Combine the operations set in account role. On the other word, remove the operations in _operationsAll which is not in the account role resource list
+    //Please note all_read should be change to access to verify here
     {
         $addFields: {
             "_operationsAll": {

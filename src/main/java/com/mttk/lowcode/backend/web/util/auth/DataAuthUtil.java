@@ -271,9 +271,21 @@ public class DataAuthUtil {
 				"$_operationsOther","$_operationsAllRead");
 		aggregates.add(AddFieldsOperation.addField("_operationsAll").withValue(s).build());
 		// 4.2
+		//Changed by Jamie@2024/5/17 -- accountOperationsNew
+		//Here is a little tricky
+		//Change all_read to access since $_operationsAll does not contains all_read
+		List<String> accountOperationsNew =new ArrayList<>(accountOperations.size());
+		for(String operation:accountOperations) {
+			if("all_read".equals(operation)) {
+				accountOperationsNew.add("access");
+			}else {
+				accountOperationsNew.add(operation);
+			}
+		}
 		Filter filter = ArrayOperators.Filter.filter("$_operationsAll").as("o")
-				.by(ArrayOperators.In.arrayOf(accountOperations).containsValue("$$o"));
+				.by(ArrayOperators.In.arrayOf(accountOperationsNew).containsValue("$$o"));
 		aggregates.add(AddFieldsOperation.addField("_operationsAll").withValue(filter).build());
+		
 		// 4.3
 		aggregates
 				.add(AddFieldsOperation.addField("_operationCount")
@@ -283,8 +295,8 @@ public class DataAuthUtil {
 		// 4.4
 		aggregates.add(Aggregation.match(Criteria.where("_operationCount").gt(0)));
 		// 4.5
-//		aggregates.add(UnsetOperation.unset("_operationsOwners", "_operationsOwnerGroups", "_operationsOther",
-//				"_operationCount"));
+		aggregates.add(UnsetOperation.unset("_operationsOwners", "_operationsOwnerGroups", "_operationsOther",
+				"_operationCount"));
 	}
 
 	
